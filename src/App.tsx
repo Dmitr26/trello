@@ -1,10 +1,15 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.scss';
+import { Routes, Route } from 'react-router-dom';
+import { Home } from './pages/Home/Home';
+import { Board } from './pages/Board/Board';
 
 function App() {
   return (
-    <div className="App">Hello World!</div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/board" element={<Board />} />
+    </Routes>
   );
 }
 
