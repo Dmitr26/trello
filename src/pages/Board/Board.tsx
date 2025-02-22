@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Board.scss';
+import { List } from './components/List/List';
 
 const boardData = {
     title: "Моя тестова дошка",
@@ -32,8 +33,18 @@ const boardData = {
 }
 
 export const Board = () => {
-    const [title, setTutle] = useState(boardData.title);
+    const [title, setTitle] = useState(boardData.title);
     const [lists, setLists] = useState(boardData.lists);
 
-    return <div className="board">{title}</div>
+    const listComponents = lists.map((list) => <List key={list.id} title={list.title} cards={list.cards} />);
+
+    return <div className="board">
+        <div className='top'>
+            <div className="title">{title}</div>
+            <button>Створити новий список</button>
+        </div>
+        <div className="lists">
+            {listComponents}
+        </div>
+    </div>
 }
