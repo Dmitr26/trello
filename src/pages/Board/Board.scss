@@ -1,3 +1,24 @@
+$button-color: #5e97ba;
+$font-color: #ffffff;
+$board-color: #0875b0;
+$header-color: #005b8c;
+
+@mixin make-border-box($padding-value) {
+    padding: $padding-value;
+    box-sizing: border-box;
+}
+
+@mixin make-bold-font($size) {
+    color: $font-color;
+    font-size: $size;
+    font-weight: bold;
+}
+
+@mixin raduis-without-border($radius) {
+    border: none;
+    border-radius: $radius;
+}
+
 #root {
     height: 100%;
 }
@@ -5,31 +26,25 @@
 .board {
     height: 100%;
     width: 100%;
-    background-color: #0875b0;
+    background-color: $board-color;
 
-    .top {
+    .header {
         width: 100%;
-        padding: 20px;
-        box-sizing: border-box;
         display: flex;
         justify-content: space-between;
-        background-color: #005b8c;
+        background-color: $header-color;
+        @include make-border-box(20px);
 
         .title {
-            color: #ffffff;
-            font-size: 30px;
-            font-weight: bold;
+            @include make-bold-font(30px);
         }
 
         button {
-            padding: 10px;
-            background-color: #3c2ed5;
-            border: 2px solid #ffffff;
-            border-radius: 10px;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: bold;
+            padding: 14px;
+            background-color: $button-color;
             cursor: pointer;
+            @include make-bold-font(15px);
+            @include raduis-without-border(10px);
         }
     }
 
@@ -38,6 +53,6 @@
         overflow-x: auto;
         display: flex;
         height: 84%;
-        scrollbar-color: rgb(255, 255, 255) #0875b0;
+        scrollbar-color: $font-color $board-color;
     }
 }

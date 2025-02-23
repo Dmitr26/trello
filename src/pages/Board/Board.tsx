@@ -39,7 +39,7 @@ export const Board = () => {
     const listComponents = lists.map((list) => <List key={list.id} title={list.title} cards={list.cards} />);
 
     return <div className="board">
-        <div className='top'>
+        <div className='header'>
             <div className="title">{title}</div>
             <button>Створити новий список</button>
         </div>

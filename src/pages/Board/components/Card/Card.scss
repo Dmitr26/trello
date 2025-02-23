@@ -1,0 +1,18 @@
+$bg-color: #ffffff;
+
+@mixin make-border-box($padding-value) {
+    padding: $padding-value;
+    box-sizing: border-box;
+}
+
+@mixin raduis-without-border($radius) {
+    border: none;
+    border-radius: $radius;
+}
+
+.card {
+    background-color: $bg-color;
+    margin-bottom: 10px;
+    @include make-border-box(10px);
+    @include raduis-without-border(10px);
+}

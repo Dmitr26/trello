@@ -1,18 +1,50 @@
+$bg-color: #d7d7d7;
+$shadow-color: #3f3f3f;
+$link-color: #707070;
+$title-color: #333232;
+
+@mixin make-border-box($padding-value) {
+    padding: $padding-value;
+    box-sizing: border-box;
+}
+
+@mixin make-bold-font($color, $size) {
+    color: $color;
+    font-size: $size;
+    font-weight: bold;
+}
+
+@mixin raduis-without-border($radius) {
+    border: none;
+    border-radius: $radius;
+}
+
 .list-body {
-    background-color: #e9e9e9;
+    background-color: $bg-color;
     min-width: 380px;
     min-height: 90px;
     max-height: 560px;
-    border: none;
-    border-radius: 15px;
-    padding: 15px;
-    box-sizing: border-box;
     margin: 10px;
     overflow: auto;
+    box-shadow: 5px 5px 5px $shadow-color;
+    @include make-border-box(15px);
+    @include raduis-without-border(15px);
 
     .listTitle {
-        font-size: 18px;
-        font-weight: bold;
         margin-bottom: 15px;
+        @include make-bold-font($title-color, 18px);
+    }
+
+    .cardsArea {
+        margin-bottom: 15px;
+    }
+
+    button {
+        background: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+        @include make-bold-font($link-color, 14px);
     }
 }
