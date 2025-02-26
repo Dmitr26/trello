@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Board.scss';
 import { List } from './components/List/List';
+import { useParams } from "react-router"
 
 const boardData = {
     title: "Моя тестова дошка",
@@ -33,6 +34,9 @@ const boardData = {
 }
 
 export const Board = () => {
+
+    const params = useParams();
+
     const [title, setTitle] = useState(boardData.title);
     const [lists, setLists] = useState(boardData.lists);
 
@@ -40,7 +44,7 @@ export const Board = () => {
 
     return <div className="board">
         <div className='header'>
-            <div className="title">{title}</div>
+            <div className="title">{title}, {params.board_id}</div>
             <button>Створити новий список</button>
         </div>
         <div className="lists">

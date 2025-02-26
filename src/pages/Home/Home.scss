@@ -1,4 +1,62 @@
+$button-color: #5e97ba;
+$font-color: #ffffff;
+$board-color: #efeeee;
+$header-color: #005b8c;
+
+@mixin make-border-box($padding-value) {
+    padding: $padding-value;
+    box-sizing: border-box;
+}
+
+@mixin make-bold-font($size) {
+    color: $font-color;
+    font-size: $size;
+    font-weight: bold;
+}
+
+@mixin raduis-without-border($radius) {
+    border: none;
+    border-radius: $radius;
+}
+
+#root {
+    height: 100%;
+}
+
 .home {
-    text-align: center;
-    color: #0000ff;
+    height: 100%;
+    // width: 100%;
+    background-color: $board-color;
+    // overflow: auto;
+
+    .header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        background-color: $header-color;
+        // position: fixed;
+        @include make-border-box(20px);
+
+        .title {
+            @include make-bold-font(30px);
+        }
+
+        button {
+            padding: 14px;
+            background-color: $button-color;
+            cursor: pointer;
+            @include make-bold-font(15px);
+            @include raduis-without-border(10px);
+        }
+    }
+
+    .boards {
+        margin: 20px 40px 0;
+        height: 86%;
+        overflow: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        @include make-border-box(0 20px 0 0);
+    }
 }
