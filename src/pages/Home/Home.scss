@@ -25,16 +25,13 @@ $header-color: #005b8c;
 
 .home {
     height: 100%;
-    // width: 100%;
     background-color: $board-color;
-    // overflow: auto;
 
     .header {
         width: 100%;
         display: flex;
         justify-content: space-between;
         background-color: $header-color;
-        // position: fixed;
         @include make-border-box(20px);
 
         .title {
@@ -52,11 +49,15 @@ $header-color: #005b8c;
 
     .boards {
         margin: 20px 40px 0;
-        height: 86%;
+        min-height: 10%;
+        max-height: 86%;
         overflow: auto;
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        // column-gap: 10px;
+        // row-gap: 10px;
+        // align-items: flex-start;
+        // justify-content: space-between;
         @include make-border-box(0 20px 0 0);
     }
 }
