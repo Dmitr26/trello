@@ -1,4 +1,8 @@
 export interface ICard {
     id: number,
-    title: string
+    title: string,
+    description: string,
+    custom: {
+        deadline: string
+    }
 }

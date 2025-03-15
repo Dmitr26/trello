@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import './Home.scss';
 import { Board } from '../Home/components/Board/Board';
 import { IBoard } from '../../common/interfaces/IBoard';
-import { Modal } from './components/Modal/Modal';
+import { Modal } from '../../modals/Modal';
 import api from '../../api/request';
+import './Home.scss';
 
 export const Home = () => {
     const [boards, setBoards] = useState<IBoard[]>([]);
@@ -13,8 +13,11 @@ export const Home = () => {
         try {
             const response = await api.get<IBoard[], { boards: IBoard[] }>('/board');
             setBoards(response.boards);
+            console.log(response.boards);
 
             // This is a temporary structure that I am using for now to remove the boards.
+
+            // const del = await api.delete('/board/' + 1741614080194);
 
             // for (let el of response.boards) {
             //     const del = await api.delete('board/' + el.id);
@@ -29,7 +32,11 @@ export const Home = () => {
         fetchData();
     }, []);
 
-    const boardComponents = boards.map((board) => <Board key={board.id} id={board.id} title={board.title} custom={board.custom} />);
+    const boardComponents = boards.map((board) => <Board
+        key={board.id}
+        id={board.id}
+        title={board.title}
+        custom={board.custom} />);
 
     return <div className="home">
         <div className='header'>
@@ -38,6 +45,6 @@ export const Home = () => {
         </div>
         <div className="empty-block"></div>
         <div className="boards">{boardComponents}</div>
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} fetchDataAgain={() => fetchData()} />
+        <Modal content={"NewBoard"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} fetchDataAgain={() => fetchData()} />
     </div>
 }

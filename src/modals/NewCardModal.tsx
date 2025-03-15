@@ -1,0 +1,95 @@
+import { useId, useState } from 'react';
+import { SubmitHandler } from '../common/SubmitHandler';
+import { WordPattern } from '../common/WordPattern';
+import api from '../api/request';
+
+interface NewCardModalProps {
+    id: string,
+    listid: string,
+    numberOfCards: number,
+    onClose: () => any,
+    fetchDataAgain: () => any
+}
+
+export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOfCards, onClose, fetchDataAgain }) => {
+
+    const postTextAreaId = useId();
+    const [warning, setWarning] = useState<string>('');
+    const [cardName, setCardName] = useState<string>('');
+    const [cardDescription, setCardDescription] = useState<string>('');
+    const [cardDeadline, setCardDeadline] = useState<string>('');
+
+    const closeModal = () => {
+        setCardName('');
+        setCardDescription('');
+        setCardDeadline('');
+        setWarning('');
+        onClose();
+    }
+
+    const postData = async () => {
+
+        if (cardName === '') {
+            setWarning('Будь ласка, вкажіть назву для картки!');
+            return;
+        }
+
+        if (!cardName.match(WordPattern)) {
+            setWarning('Ви можете використовувати цифри, літери, пробіли, тире, крапки та нижні підкреслення!');
+            return;
+        }
+
+        if (cardDescription === '') {
+            setWarning('Будь ласка, додайте опис для картки!');
+            return;
+        }
+
+        if (cardDeadline === '') {
+            setWarning('Будь ласка, вкажіть дедлайн для картки!');
+            return;
+        }
+
+        try {
+            const response = await api.post('/board/' + id + '/card', {
+                title: cardName,
+                list_id: listid,
+                position: numberOfCards,
+                description: cardDescription,
+                custom: {
+                    deadline: cardDeadline.replace(/T/g, ' ')
+                }
+            });
+            console.log(response);
+            fetchDataAgain();
+            closeModal();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    return <>
+        <form className="modal-form" onSubmit={SubmitHandler}>
+            <label>Назва:</label>
+            <input className="name-input" type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} />
+        </form>
+        <div className="label-margin"><label className="description-label" htmlFor={postTextAreaId}>Опис:</label></div>
+        <textarea
+            id={postTextAreaId}
+            className="description-field"
+            value={cardDescription}
+            onChange={(e) => setCardDescription(e.target.value)} />
+        <form className="modal-form" onSubmit={SubmitHandler}>
+            <label>Дедлайн:</label>
+            <input
+                className="deadline-input"
+                type="datetime-local"
+                value={cardDeadline}
+                onChange={(e) => setCardDeadline(e.target.value)} />
+        </form>
+        <div className="warning">{warning}</div>
+        <div className="buttons">
+            <button onClick={() => postData()}>Створити картку</button>
+            <button onClick={() => closeModal()}>Закрити</button>
+        </div>
+    </>
+}

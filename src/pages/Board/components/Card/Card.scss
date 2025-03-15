@@ -15,4 +15,19 @@ $bg-color: #ffffff;
     margin-bottom: 10px;
     @include make-border-box(10px);
     @include raduis-without-border(10px);
+
+    .cardTitle {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .cardDescription {
+        margin-bottom: 10px;
+    }
+
+    .CardDeadline {
+        .ddln {
+            font-weight: bold;
+        }
+    }
 }

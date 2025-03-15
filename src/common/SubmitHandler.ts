@@ -1,3 +1,3 @@
-export function submitHandler(e: React.FormEvent<EventTarget>) {
+export function SubmitHandler(e: React.FormEvent<EventTarget>) {
     e.preventDefault();
 }
