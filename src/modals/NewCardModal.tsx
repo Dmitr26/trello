@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { SubmitHandler } from '../common/SubmitHandler';
 import { WordPattern } from '../common/WordPattern';
+import { toast } from 'react-toastify';
 import api from '../api/request';
 
 interface NewCardModalProps {
@@ -28,7 +29,6 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
     }
 
     const postData = async () => {
-
         if (cardName === '') {
             setWarning('Будь ласка, вкажіть назву для картки!');
             return;
@@ -59,11 +59,13 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
                     deadline: cardDeadline.replace(/T/g, ' ')
                 }
             });
-            console.log(response);
+            toast.success(`Картку "${cardName}" успішно створено`);
             fetchDataAgain();
             closeModal();
         } catch (error) {
             console.error(error);
+            toast.error("Не вдалося створити нову картку");
+            closeModal();
         }
     }
 

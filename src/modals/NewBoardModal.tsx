@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SubmitHandler } from '../common/SubmitHandler';
 import { WordPattern } from '../common/WordPattern';
+import { toast } from 'react-toastify';
 import api from '../api/request';
 import './Modal.scss';
 
@@ -40,11 +41,13 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
                     background: boardColor
                 }
             });
-            console.log(response);
+            toast.success(`Дошку "${boardName}" успішно створено`);
             fetchDataAgain();
             closeModal();
         } catch (error) {
             console.error(error);
+            toast.error("Не вдалося створити нову дошку");
+            closeModal();
         }
     };
 

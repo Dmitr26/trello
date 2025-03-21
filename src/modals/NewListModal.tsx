@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SubmitHandler } from '../common/SubmitHandler';
 import { WordPattern } from '../common/WordPattern';
+import { toast } from 'react-toastify';
 import api from '../api/request';
 
 interface NewListModalProps {
@@ -37,11 +38,13 @@ export const NewListModal: React.FC<NewListModalProps> = ({ id, numberOfLists, o
                 title: listName,
                 position: numberOfLists
             });
-            console.log(response);
+            toast.success(`Список "${listName}" успішно створено`);
             fetchDataAgain();
             closeModal();
         } catch (error) {
             console.error(error);
+            toast.error("Не вдалося створити новий список");
+            closeModal();
         }
     }
 

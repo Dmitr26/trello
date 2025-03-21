@@ -6,6 +6,7 @@ import { ReactComponent as BGIcon } from '../../common/background_icon.svg';
 import { List } from './components/List/List';
 import { Modal } from '../../modals/Modal';
 import { useParams } from "react-router";
+import { toast } from 'react-toastify';
 import api from '../../api/request';
 import './Board.scss';
 
@@ -23,7 +24,6 @@ export const Board = () => {
     const fetchData = async () => {
         try {
             const response = await api.get<{ title: string, lists: IList[] }, IBoard>('/board/' + params.board_id);
-            console.log(response);
             setTitle(response.title);
             setBackgroundColor(response.custom.background);
             if (typeof response.custom.backgroundImage !== 'undefined') {
@@ -32,13 +32,16 @@ export const Board = () => {
             if (typeof response.lists !== 'undefined') {
                 setLists(response.lists);
             }
+            toast.success(`Вітаємо на дошці ${response.title}`);
 
             // This is a temporary structure that I am using for now to remove lists and cards.
 
             // const del = await api.delete('/board/' + params.board_id + '/list/' + 1741613586492);
             // const del = await api.delete('/board/' + params.board_id + '/card/' + 1741613909574);
+
         } catch (error) {
             console.error(error);
+            toast.error("Не вдалося завантажити цю дошку");
         }
     };
 

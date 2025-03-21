@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from "react-router";
+import { toast } from 'react-toastify';
 import api from '../api/request';
 
 interface BoardNameChangeProps {
@@ -29,7 +30,6 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
     }
 
     const postData = async () => {
-
         try {
             const response = await api.put('/board/' + params.board_id, {
                 custom: {
@@ -38,9 +38,12 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
                 }
             });
             fetchDataAgain();
+            toast.success("Стиль дошки змінено");
             onClose();
         } catch (error) {
             console.error(error);
+            toast.error("Стиль дошки не вдалося змінити");
+            onClose();
         }
     }
 

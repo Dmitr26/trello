@@ -54,10 +54,6 @@ $header-color: #005b8c;
         overflow: auto;
         display: flex;
         flex-wrap: wrap;
-        // column-gap: 10px;
-        // row-gap: 10px;
-        // align-items: flex-start;
-        // justify-content: space-between;
         @include make-border-box(0 20px 0 0);
     }
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from "react-router";
 import { SubmitHandler } from '../common/SubmitHandler';
 import { WordPattern } from '../common/WordPattern';
+import { toast } from 'react-toastify';
 import api from '../api/request';
 
 interface BoardNameChangeProps {
@@ -34,10 +35,13 @@ export const BoardNameChangeModal: React.FC<BoardNameChangeProps> = ({ titleToCh
                     title: data
                 });
                 fetchDataAgain();
+                toast.success("Назву дошки змінено");
                 setWarning('');
                 onClose();
             } catch (error) {
                 console.error(error);
+                toast.error("Назву дошки не вдалося змінити");
+                onClose();
             }
         } else {
             setWarning('Будь ласка, вкажіть назву для дошки!');

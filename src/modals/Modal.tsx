@@ -3,22 +3,10 @@ import { BoardNameChangeModal } from './BoardNameChangeModal';
 import { BoardBackgroundChangeModal } from './BoardBackgroundChangeModal';
 import { NewListModal } from './NewListModal';
 import { NewCardModal } from './NewCardModal';
+import { IModal } from '../common/interfaces/IModal';
 import './Modal.scss';
 
-interface ModalProps {
-    content: string,
-    isOpen: boolean,
-    onClose: () => any,
-    fetchDataAgain: () => any,
-    titleToChange?: string,
-    bgColorToChange?: string,
-    id?: string,
-    numberOfLists?: number,
-    numberOfCards?: number,
-    listid?: string
-}
-
-export const Modal: React.FC<ModalProps> = ({
+export const Modal: React.FC<IModal> = ({
     content,
     isOpen,
     onClose,

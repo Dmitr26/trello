@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Board } from '../Home/components/Board/Board';
+import { ProgressBar } from '../Home/components/Progress/ProgressBar';
+import { NoBoards } from './components/No-boards/NoBoards';
 import { IBoard } from '../../common/interfaces/IBoard';
 import { Modal } from '../../modals/Modal';
+import { toast } from 'react-toastify';
 import api from '../../api/request';
 import './Home.scss';
 
 export const Home = () => {
+
     const [boards, setBoards] = useState<IBoard[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [progressWidth, setprogressWidth] = useState(0);
+    const [isProgressValue, setIsProgressValue] = useState(false);
 
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
         try {
             const response = await api.get<IBoard[], { boards: IBoard[] }>('/board');
             setBoards(response.boards);
-            console.log(response.boards);
 
             // This is a temporary structure that I am using for now to remove the boards.
 
@@ -25,8 +30,24 @@ export const Home = () => {
 
         } catch (error) {
             console.error(error);
+            setIsProgressValue(false);
+            toast.error("Не вдалося завантажити дошки");
         }
     };
+
+    useEffect(() => {
+        api.interceptors.request.use((config: any) => {
+            setIsProgressValue(true);
+            return config;
+        });
+        api.interceptors.response.use((response: any) => {
+            setprogressWidth(95);
+            setInterval(function () {
+                setIsProgressValue(false);
+            }, 2000);
+            return response;
+        });
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -43,8 +64,11 @@ export const Home = () => {
             <div className="title">Мої завдання</div>
             <button onClick={() => setIsModalOpen(true)}>Створити нову дошку завдання</button>
         </div>
-        <div className="empty-block"></div>
-        <div className="boards">{boardComponents}</div>
+        {isProgressValue && <ProgressBar barLength={progressWidth} />}
+        <div className="boards">
+            {!isProgressValue && boards.length !== 0 && boardComponents}
+            {!isProgressValue && boards.length === 0 && <NoBoards />}
+        </div>
         <Modal content={"NewBoard"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} fetchDataAgain={() => fetchData()} />
-    </div>
+    </div >
 }
