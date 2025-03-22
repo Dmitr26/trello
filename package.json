@@ -1,6 +1,7 @@
 {
   "name": "my-app",
   "version": "0.1.0",
+  "homepage": "https://Dmitr26.github.io/trello",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
