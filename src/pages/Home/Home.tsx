@@ -3,7 +3,8 @@ import { Board } from '../Home/components/Board/Board';
 import { ProgressBar } from '../Home/components/Progress/ProgressBar';
 import { NoBoards } from './components/No-boards/NoBoards';
 import { IBoard } from '../../common/interfaces/IBoard';
-import { Modal } from '../../modals/Modal';
+import { Modal } from '../../common/components/modals/Modal';
+import { NewBoardModal } from '../../common/components/modals/home/NewBoardModal';
 import { toast } from 'react-toastify';
 import api from '../../api/request';
 import './Home.scss';
@@ -36,11 +37,11 @@ export const Home = () => {
     };
 
     useEffect(() => {
-        api.interceptors.request.use((config: any) => {
+        api.interceptors.request.use((config) => {
             setIsProgressValue(true);
             return config;
         });
-        api.interceptors.response.use((response: any) => {
+        api.interceptors.response.use((response) => {
             setprogressWidth(95);
             setInterval(function () {
                 setIsProgressValue(false);
@@ -69,6 +70,8 @@ export const Home = () => {
             {!isProgressValue && boards.length !== 0 && boardComponents}
             {!isProgressValue && boards.length === 0 && <NoBoards />}
         </div>
-        <Modal content={"NewBoard"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} fetchDataAgain={() => fetchData()} />
+        <Modal isOpen={isModalOpen}>
+            <NewBoardModal onClose={() => setIsModalOpen(false)} fetchDataAgain={() => fetchData()} />
+        </Modal>
     </div >
 }

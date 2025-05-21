@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { IBoard } from '../../common/interfaces/IBoard';
 import { IList } from '../../common/interfaces/IList';
-import { ReactComponent as EditIcon } from '../../common/edit_icon.svg';
-import { ReactComponent as BGIcon } from '../../common/background_icon.svg';
+import { ReactComponent as EditIcon } from '../../common/icons/edit_icon.svg';
+import { ReactComponent as BGIcon } from '../../common/icons/background_icon.svg';
 import { List } from './components/List/List';
-import { Modal } from '../../modals/Modal';
+import { Modal } from '../../common/components/modals/Modal';
+import { BoardNameChangeModal } from '../../common/components/modals/board/BoardNameChangeModal';
+import { BoardBackgroundChangeModal } from '../../common/components/modals/board/BoardBackgroundChangeModal';
+import { NewListModal } from '../../common/components/modals/board/NewListModal';
 import { useParams } from "react-router";
 import { toast } from 'react-toastify';
 import api from '../../api/request';
@@ -13,31 +16,88 @@ import './Board.scss';
 export const Board = () => {
 
     const params = useParams();
-    const [title, setTitle] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isListModalOpen, setIsListModalOpen] = useState(false);
     const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
-    const [backgroundColor, setBackgroundColor] = useState<string>("#ffffff");
-    const [backgroundImage, setBackgroundImage] = useState<string>("");
     const [lists, setLists] = useState<IList[]>([]);
+    const [boardData, setBoardData] = useState({
+        title: "",
+        backgroundColor: "#ffffff",
+        backgroundImage: ""
+    });
+    const [slotPositions, setSlotPositions] = useState<{ [id: string]: boolean[] }>({});
+    const [singleSlot, setSingleSlot] = useState<{ [id: string]: boolean }>({});
+    const [topOrBottom, setTopOrBottom] = useState(false);
+
+    const changeSlotState = (data: { [id: string]: boolean[] }) => {
+        setSlotPositions(data);
+    }
+
+    const changeEmptySlotState = (data: { [id: string]: boolean }) => {
+        setSingleSlot(data);
+    }
+
+    const setTopOrBottomOfCard = (data: boolean) => {
+        setTopOrBottom(data);
+    }
+
+    const createSlotPositions = (lists: IList[]) => {
+        if (lists) {
+            const arr = {};
+
+            const listsmap = lists.map((list) => {
+                return ({
+                    [list.id]: list.cards.map(() => false)
+                })
+            });
+
+            for (let i = 0; i < listsmap.length; i++) {
+                Object.assign(arr, listsmap[i]);
+            }
+
+            setSlotPositions(arr);
+        }
+    }
+
+    const createSingleSlots = (lists: IList[]) => {
+        if (lists) {
+            const singleArr = {};
+
+            const singleSlots = lists.map((list) => {
+                return ({
+                    [list.id]: false
+                })
+            });
+
+            for (let i = 0; i < singleSlots.length; i++) {
+                Object.assign(singleArr, singleSlots[i]);
+            }
+
+            setSingleSlot(singleArr);
+        }
+    }
 
     const fetchData = async () => {
         try {
             const response = await api.get<{ title: string, lists: IList[] }, IBoard>('/board/' + params.board_id);
-            setTitle(response.title);
-            setBackgroundColor(response.custom.background);
-            if (typeof response.custom.backgroundImage !== 'undefined') {
-                setBackgroundImage(response.custom.backgroundImage);
-            }
+
+            setBoardData({
+                title: response.title,
+                backgroundColor: response.custom.background,
+                backgroundImage: response.custom.backgroundImage !== undefined ? response.custom.backgroundImage : ""
+            });
+
             if (typeof response.lists !== 'undefined') {
                 setLists(response.lists);
+                createSlotPositions(response.lists);
+                createSingleSlots(response.lists);
             }
             toast.success(`Вітаємо на дошці ${response.title}`);
 
             // This is a temporary structure that I am using for now to remove lists and cards.
 
-            // const del = await api.delete('/board/' + params.board_id + '/list/' + 1741613586492);
-            // const del = await api.delete('/board/' + params.board_id + '/card/' + 1741613909574);
+            // const del = await api.delete('/board/' + params.board_id + '/list/' + 1747658016740);
+            // const del = await api.delete('/board/' + params.board_id + '/card/' + 1746983634789);
 
         } catch (error) {
             console.error(error);
@@ -49,22 +109,30 @@ export const Board = () => {
         fetchData();
     }, []);
 
-    const listComponents = lists.map((list) => <List
+    const listComponents = lists.sort((a, b) => a.position - b.position).map((list) => <List
         key={list.id}
         id={list.id}
+        boardId={params.board_id}
+        position={list.position}
         title={list.title}
         cards={list.cards}
+        slots={slotPositions}
+        changeSlots={changeSlotState}
+        singleSlot={singleSlot}
+        changeSingleSlot={changeEmptySlotState}
+        topOrBottom={topOrBottom}
+        setTopOrBottom={setTopOrBottomOfCard}
         fetchData={() => fetchData()} />);
 
     return <div className="board" style={{
-        backgroundColor: backgroundColor,
-        backgroundImage: backgroundImage !== "" ? `url(${backgroundImage})` : undefined,
+        backgroundColor: boardData.backgroundColor,
+        backgroundImage: boardData.backgroundImage !== "" ? `url(${boardData.backgroundImage})` : undefined,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat'
     }}>
         <div className='header'>
-            <div className="title">{title + ' '}
+            <div className="title">{boardData.title + ' '}
                 <button className="edit" onClick={() => setIsModalOpen(true)}><EditIcon /></button>
                 <button className="edit" onClick={() => setIsBackgroundModalOpen(true)}><BGIcon /></button>
             </div>
@@ -73,26 +141,27 @@ export const Board = () => {
         <div className="lists">
             {listComponents}
         </div>
-        <Modal
-            content={"BoardNameChange"}
-            titleToChange={title}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            fetchDataAgain={() => fetchData()} />
 
-        <Modal
-            content={"BoardBackgroundChange"}
-            bgColorToChange={backgroundColor}
-            isOpen={isBackgroundModalOpen}
-            onClose={() => setIsBackgroundModalOpen(false)}
-            fetchDataAgain={() => fetchData()} />
+        <Modal isOpen={isModalOpen}>
+            <BoardNameChangeModal
+                titleToChange={boardData.title}
+                onClose={() => setIsModalOpen(false)}
+                fetchDataAgain={() => fetchData()} />
+        </Modal>
 
-        <Modal
-            content={"NewList"}
-            id={params.board_id}
-            numberOfLists={lists.length + 1}
-            isOpen={isListModalOpen}
-            onClose={() => setIsListModalOpen(false)}
-            fetchDataAgain={() => fetchData()} />
+        <Modal isOpen={isBackgroundModalOpen}>
+            <BoardBackgroundChangeModal
+                bgColorToChange={boardData.backgroundColor}
+                onClose={() => setIsBackgroundModalOpen(false)}
+                fetchDataAgain={() => fetchData()} />
+        </Modal>
+
+        <Modal isOpen={isListModalOpen}>
+            <NewListModal
+                id={params.board_id}
+                numberOfLists={lists.length + 1}
+                onClose={() => setIsListModalOpen(false)}
+                fetchDataAgain={() => fetchData()} />
+        </Modal>
     </div>
 }

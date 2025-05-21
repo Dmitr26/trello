@@ -1,0 +1,113 @@
+@import "../../StyleVariables.scss";
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+    overflow-y: auto;
+    z-index: 999;
+
+    .modal-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: 100%;
+
+        .modal-content {
+            position: relative;
+            margin: 20px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            background-color: $modal-color;
+            padding: 20px;
+            transform: translateY(-50px);
+            transition: opacity 0.3s, transform 0.3s;
+
+            .modal-form {
+                margin-bottom: 20px;
+
+                label {
+                    margin-right: 20px;
+                    @include make-bold-font(18px, $label-font-color);
+                }
+
+                .name-input {
+                    @include input-style(422px);
+                    @include make-border-box(10px);
+                }
+
+                .color-input {
+                    @include input-style(424px);
+                    @include make-border-box(10px);
+                }
+
+                .deadline-input {
+                    @include input-style(392px);
+                }
+            }
+
+            .edit-form {
+                input {
+                    @include input-style(100%);
+                    @include make-border-box(10px);
+                }
+            }
+
+            .info {
+                text-align: justify;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .label-margin {
+                margin-bottom: 10px;
+
+                .description-label {
+                    margin-bottom: 10px;
+                    @include make-bold-font(18px, $label-font-color);
+                }
+            }
+
+            .description-field {
+                margin-bottom: 20px;
+                width: 100%;
+                height: 80px;
+                border-style: inset;
+                @include make-border-box(10px);
+            }
+
+            .warning {
+                margin-bottom: 20px;
+                @include make-bold-font(15px, $warning-color);
+            }
+
+            .warning-top {
+                margin-top: 10px;
+                @include make-bold-font(15px, $warning-color);
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: space-between;
+
+                button {
+                    width: 200px;
+                    padding: 14px;
+                    background-color: $button-color;
+                    cursor: pointer;
+                    @include make-bold-font(15px, $button-font-color);
+                    @include raduis-without-border(10px);
+                }
+            }
+        }
+    }
+}

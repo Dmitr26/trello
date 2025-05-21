@@ -1,10 +1,4 @@
-$inner-bar-color: #ffffff;
-$outer-bar-color: #005b8c;
-
-@mixin raduis-without-border($radius) {
-    border: none;
-    border-radius: $radius;
-}
+@import "../../../../common/StyleVariables.scss";
 
 .progress-bar {
     position: relative;

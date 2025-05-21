@@ -1,1 +1,1 @@
-export const WordPattern = /^[a-zA-Zа-яА-Яії0-9\s_.-]*$/;
+export const WordPattern = /^[a-zA-Zа-яА-Яіїє0-9\s_.-]*$/;

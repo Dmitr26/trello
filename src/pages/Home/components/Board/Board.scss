@@ -1,21 +1,4 @@
-$font-color: #ffffff;
-$shadow-color: #3f3f3f;
-
-@mixin make-border-box($padding-value) {
-    padding: $padding-value;
-    box-sizing: border-box;
-}
-
-@mixin make-bold-font($size) {
-    color: $font-color;
-    font-size: $size;
-    font-weight: bold;
-}
-
-@mixin raduis-without-border($radius) {
-    border: none;
-    border-radius: $radius;
-}
+@import "../../../../common/StyleVariables.scss";
 
 .board-link {
     text-decoration: none;
@@ -29,7 +12,7 @@ $shadow-color: #3f3f3f;
         height: 100%;
         box-shadow: 5px 5px 5px $shadow-color;
         overflow: hidden;
-        @include make-bold-font(20px);
+        @include make-bold-font(20px, $font-color);
         @include make-border-box(12px 20px);
         @include raduis-without-border(10px);
     }

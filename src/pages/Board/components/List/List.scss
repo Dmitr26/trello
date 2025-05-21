@@ -1,26 +1,7 @@
-$bg-color: #d7d7d7;
-$shadow-color: #3f3f3f;
-$link-color: #707070;
-$title-color: #333232;
-
-@mixin make-border-box($padding-value) {
-    padding: $padding-value;
-    box-sizing: border-box;
-}
-
-@mixin make-bold-font($color, $size) {
-    color: $color;
-    font-size: $size;
-    font-weight: bold;
-}
-
-@mixin raduis-without-border($radius) {
-    border: none;
-    border-radius: $radius;
-}
+@import "../../../../common/StyleVariables.scss";
 
 .list-body {
-    background-color: $bg-color;
+    background-color: $list-bg-color;
     min-width: 380px;
     min-height: 90px;
     max-height: 560px;
@@ -32,11 +13,31 @@ $title-color: #333232;
 
     .listTitle {
         margin-bottom: 15px;
-        @include make-bold-font($title-color, 18px);
+        @include make-bold-font(18px, $list-title-color);
+    }
+
+    .slot {
+        min-width: 360px;
+        min-height: 105px;
+        background-color: #a9a9a9;
+        @include raduis-without-border(10px);
     }
 
     .cardsArea {
+        min-height: 30px;
         margin-bottom: 15px;
+
+        .card-with-slot {
+            margin-bottom: 15px;
+
+            .slot {
+                min-width: 360px;
+                min-height: 105px;
+                background-color: #a9a9a9;
+                margin-bottom: 20px;
+                @include raduis-without-border(10px);
+            }
+        }
     }
 
     button {
@@ -45,6 +46,6 @@ $title-color: #333232;
         margin: 0;
         padding: 0;
         cursor: pointer;
-        @include make-bold-font($link-color, 14px);
+        @include make-bold-font(14px, $list-link-color);
     }
 }

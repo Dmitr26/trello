@@ -1,18 +1,12 @@
-$bg-color: #ffffff;
-
-@mixin make-border-box($padding-value) {
-    padding: $padding-value;
-    box-sizing: border-box;
-}
-
-@mixin raduis-without-border($radius) {
-    border: none;
-    border-radius: $radius;
-}
+@import "../../../../common/StyleVariables.scss";
 
 .card {
-    background-color: $bg-color;
-    margin-bottom: 10px;
+    background-color: $card-bg-color;
+    // position: absolute;
+    // z-index: 2;
+    // width: 100%;
+    min-width: 360px;
+    margin-bottom: 20px;
     @include make-border-box(10px);
     @include raduis-without-border(10px);
 

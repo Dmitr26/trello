@@ -1,23 +1,4 @@
-$button-color: #5e97ba;
-$font-color: #ffffff;
-$board-color: #efeeee;
-$header-color: #005b8c;
-
-@mixin make-border-box($padding-value) {
-    padding: $padding-value;
-    box-sizing: border-box;
-}
-
-@mixin make-bold-font($size) {
-    color: $font-color;
-    font-size: $size;
-    font-weight: bold;
-}
-
-@mixin raduis-without-border($radius) {
-    border: none;
-    border-radius: $radius;
-}
+@import "../../common/StyleVariables.scss";
 
 #root {
     height: 100%;
@@ -25,7 +6,7 @@ $header-color: #005b8c;
 
 .home {
     height: 100%;
-    background-color: $board-color;
+    background-color: $home-board-color;
 
     .header {
         width: 100%;
@@ -35,14 +16,14 @@ $header-color: #005b8c;
         @include make-border-box(20px);
 
         .title {
-            @include make-bold-font(30px);
+            @include make-bold-font(30px, $font-color);
         }
 
         button {
             padding: 14px;
             background-color: $button-color;
             cursor: pointer;
-            @include make-bold-font(15px);
+            @include make-bold-font(15px, $font-color);
             @include raduis-without-border(10px);
         }
     }
