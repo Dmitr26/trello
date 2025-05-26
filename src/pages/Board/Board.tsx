@@ -94,11 +94,6 @@ export const Board = () => {
             }
             toast.success(`Вітаємо на дошці ${response.title}`);
 
-            // This is a temporary structure that I am using for now to remove lists and cards.
-
-            // const del = await api.delete('/board/' + params.board_id + '/list/' + 1747658016740);
-            // const del = await api.delete('/board/' + params.board_id + '/card/' + 1746983634789);
-
         } catch (error) {
             console.error(error);
             toast.error("Не вдалося завантажити цю дошку");

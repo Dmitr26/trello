@@ -5,11 +5,11 @@ import { Modal } from '../../../../common/components/modals/Modal';
 import { NewCardModal } from '../../../../common/components/modals/board/NewCardModal';
 import DraggableElement from '../../../../common/components/drag-drop/DraggableElement/DraggableElement';
 import DropContainer from '../../../../common/components/drag-drop/DropContainer/DropContainer';
+import CloseIcon from '../../../../common/icons/close_icon.svg';
 import { DragStartHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
 import { DragLeaveHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
 import { DragEnterHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
 import { DropHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
-import { useParams } from "react-router";
 import classNames from 'classnames';
 import api from '../../../../api/request';
 import './List.scss';
@@ -32,12 +32,16 @@ export const List: React.FC<IFetch> = ({
     setTopOrBottom
 }) => {
 
-    const params = useParams();
     const [isCardModalOpen, setIsCardModalOpen] = useState(false);
     const [slotsToChange, setSlotsToChange] = useState<{ [id: string]: boolean[] }>(slots);
     const [dragStartSlot, setDragStartSlot] = useState(false);
     const [dragStartSlotPosition, setDragStartSlotPosition] = useState(0);
     const [slotToClose, setSlotToClose] = useState(0);
+
+    const RemoveList = async () => {
+        await api.delete('/board/' + boardId + '/list/' + id);
+        fetchData();
+    }
 
     const defineOrder = (
         under: number | undefined,
@@ -194,7 +198,8 @@ export const List: React.FC<IFetch> = ({
                     position={card.position}
                     title={card.title}
                     description={card.description}
-                    custom={card.custom} />
+                    custom={card.custom}
+                    fetchData={() => fetchData()} />
                 {Object.values(slotsToChange[id])[card.position - 1] && !topOrBottom && <div className="slot"></div>}
             </div>}
         </DraggableElement>
@@ -203,7 +208,13 @@ export const List: React.FC<IFetch> = ({
 
     return <div className="list">
         <div className="list-body">
-            <div className="listTitle">{title}</div>
+            <div className="listTop">
+                <div className="listTitle">{title}</div>
+                <div>
+                    <img className="deleteIcon" src={CloseIcon} style={{ height: 22, width: 22, cursor: 'pointer' }} alt="No img" onClick={RemoveList} />
+                </div>
+            </div>
+
             <DropContainer id={id} key={id}>
                 {(props) => (
                     <div {...props} className={classNames('listContent', props.className)}>
@@ -219,7 +230,7 @@ export const List: React.FC<IFetch> = ({
 
         <Modal isOpen={isCardModalOpen}>
             <NewCardModal
-                id={params.board_id}
+                id={boardId}
                 numberOfCards={cards.length + 1}
                 listid={id}
                 onClose={() => setIsCardModalOpen(false)}

@@ -17,11 +17,13 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
             left: childRect.left - event.clientX
         }
 
-        onDragStart?.({
-            thisid: Number(childRef.current.getAttribute("data-drag-item")),
-            position: Number(childRef.current.getAttribute("data-item-order"))
-        });
-        setDragging(true);
+        if (document.elementFromPoint(event.clientX, event.clientY)?.classList.value !== 'deleteIcon') {
+            onDragStart?.({
+                thisid: Number(childRef.current.getAttribute("data-drag-item")),
+                position: Number(childRef.current.getAttribute("data-item-order"))
+            });
+            setDragging(true);
+        }
 
     }, [slots]);
 
@@ -52,7 +54,11 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
         const upOrDown = event.clientY < closestCard?.offsetTop + closestCard?.offsetHeight / 2;
 
         if (Number(ContainerId) !== parentId) {
-            onDragEnter?.({ thisid: Number(ContainerId), order: Number(closestDragElement?.getAttribute('data-item-order')), topOrBottomSlot: upOrDown });
+            onDragEnter?.({
+                thisid: Number(ContainerId),
+                order: Number(closestDragElement?.getAttribute('data-item-order')),
+                topOrBottomSlot: upOrDown
+            });
         }
 
         if (!closestDropContainer) return;

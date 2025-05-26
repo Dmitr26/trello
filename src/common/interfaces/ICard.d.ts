@@ -4,7 +4,6 @@ export interface ICard {
     position: number,
     title: string,
     description: string,
-    // onDragStart: (e: DragEvent<HTMLDivElement>) => void,
     custom: {
         deadline: string
     }

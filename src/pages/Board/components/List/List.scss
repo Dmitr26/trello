@@ -11,9 +11,14 @@
     @include make-border-box(15px);
     @include raduis-without-border(15px);
 
-    .listTitle {
-        margin-bottom: 15px;
-        @include make-bold-font(18px, $list-title-color);
+    .listTop {
+        display: flex;
+
+        .listTitle {
+            width: 95%;
+            margin-bottom: 15px;
+            @include make-bold-font(18px, $list-title-color);
+        }
     }
 
     .slot {
