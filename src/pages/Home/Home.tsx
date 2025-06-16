@@ -20,15 +20,6 @@ export const Home = () => {
         try {
             const response = await api.get<IBoard[], { boards: IBoard[] }>('/board');
             setBoards(response.boards);
-
-            // This is a temporary structure that I am using for now to remove the boards.
-
-            // const del = await api.delete('/board/' + 1741614080194);
-
-            // for (let el of response.boards) {
-            //     const del = await api.delete('board/' + el.id);
-            // }
-
         } catch (error) {
             console.error(error);
             setIsProgressValue(false);

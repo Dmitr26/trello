@@ -23,7 +23,7 @@
 
     .slot {
         min-width: 360px;
-        min-height: 105px;
+        min-height: 130px;
         background-color: #a9a9a9;
         @include raduis-without-border(10px);
     }
@@ -37,7 +37,7 @@
 
             .slot {
                 min-width: 360px;
-                min-height: 105px;
+                min-height: 130px;
                 background-color: #a9a9a9;
                 margin-bottom: 20px;
                 @include raduis-without-border(10px);

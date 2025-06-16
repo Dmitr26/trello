@@ -6,5 +6,6 @@ export interface ICard {
     description: string,
     custom: {
         deadline: string
-    }
+    },
+    parentId?: number
 }

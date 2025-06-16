@@ -54,7 +54,6 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
         <form className="modal-form" onSubmit={SubmitHandler}>
             <label>Назва:</label>
             <input
-                className="name-input"
                 type="text"
                 value={boardName}
                 onChange={(e) => setBoardName(e.target.value)} />
@@ -62,7 +61,6 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
         <form className="modal-form">
             <label>Колір:</label>
             <input
-                className="color-input"
                 type="color"
                 value={boardColor}
                 onChange={(e) => setBoardColor(e.target.value)} />
@@ -70,6 +68,7 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
         <div className="warning">{warning}</div>
         <div className="buttons">
             <button onClick={() => postData()}>Створити дошку</button>
+            <div className="btn-space"></div>
             <button onClick={() => closeModal()}>Закрити</button>
         </div>
     </>

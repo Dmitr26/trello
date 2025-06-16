@@ -24,8 +24,7 @@
         .modal-content {
             position: relative;
             margin: 20px;
-            width: 100%;
-            max-width: 500px;
+            width: fit-content;
             border-radius: 20px;
             background-color: $modal-color;
             padding: 20px;
@@ -34,24 +33,22 @@
 
             .modal-form {
                 margin-bottom: 20px;
+                display: flex;
+                align-items: center;
 
                 label {
-                    margin-right: 20px;
-                    @include make-bold-font(18px, $label-font-color);
+                    margin-right: 18px;
+                    @include make-bold-font(20px, $label-font-color);
                 }
 
-                .name-input {
-                    @include input-style(422px);
+                input {
+                    @include input-style(100%);
                     @include make-border-box(10px);
                 }
 
-                .color-input {
-                    @include input-style(424px);
-                    @include make-border-box(10px);
-                }
-
-                .deadline-input {
-                    @include input-style(392px);
+                .img-input {
+                    border: none;
+                    margin: 3px 0 0;
                 }
             }
 
@@ -59,6 +56,7 @@
                 input {
                     @include input-style(100%);
                     @include make-border-box(10px);
+                    min-width: 500px;
                 }
             }
 
@@ -66,6 +64,7 @@
                 text-align: justify;
                 font-weight: bold;
                 margin-bottom: 20px;
+                max-width: 450px;
             }
 
             .label-margin {
@@ -83,6 +82,15 @@
                 height: 80px;
                 border-style: inset;
                 @include make-border-box(10px);
+            }
+
+            .select-n-label {
+                margin-bottom: 20px;
+
+                label {
+                    margin-right: 10px;
+                    font-weight: bold;
+                }
             }
 
             .warning {
@@ -106,6 +114,14 @@
                     cursor: pointer;
                     @include make-bold-font(15px, $button-font-color);
                     @include raduis-without-border(10px);
+
+                    &:hover {
+                        background-color: #0747a0;
+                    }
+                }
+
+                .btn-space {
+                    width: 15px;
                 }
             }
         }

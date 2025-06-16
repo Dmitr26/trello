@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
 import { IBoard } from '../../common/interfaces/IBoard';
 import { IList } from '../../common/interfaces/IList';
 import { ReactComponent as EditIcon } from '../../common/icons/edit_icon.svg';
@@ -8,7 +10,8 @@ import { Modal } from '../../common/components/modals/Modal';
 import { BoardNameChangeModal } from '../../common/components/modals/board/BoardNameChangeModal';
 import { BoardBackgroundChangeModal } from '../../common/components/modals/board/BoardBackgroundChangeModal';
 import { NewListModal } from '../../common/components/modals/board/NewListModal';
-import { useParams } from "react-router";
+import { CardEditingModal } from '../../common/components/modals/board/CardEditingModal';
+import { RootState } from '../../common/store/store';
 import { toast } from 'react-toastify';
 import api from '../../api/request';
 import './Board.scss';
@@ -28,6 +31,11 @@ export const Board = () => {
     const [slotPositions, setSlotPositions] = useState<{ [id: string]: boolean[] }>({});
     const [singleSlot, setSingleSlot] = useState<{ [id: string]: boolean }>({});
     const [topOrBottom, setTopOrBottom] = useState(false);
+
+    const { isEditModalOpen, cardData, boardsData } = useSelector((state: RootState) => state.modal);
+
+    const serializedState = localStorage.getItem('state');
+    const parsedSerializedState = serializedState ? JSON.parse(serializedState) : null;
 
     const changeSlotState = (data: { [id: string]: boolean[] }) => {
         setSlotPositions(data);
@@ -77,6 +85,12 @@ export const Board = () => {
         }
     }
 
+    const setListsWithSlots = (lists: IList[]) => {
+        setLists(lists);
+        createSlotPositions(lists);
+        createSingleSlots(lists);
+    }
+
     const fetchData = async () => {
         try {
             const response = await api.get<{ title: string, lists: IList[] }, IBoard>('/board/' + params.board_id);
@@ -88,12 +102,10 @@ export const Board = () => {
             });
 
             if (typeof response.lists !== 'undefined') {
-                setLists(response.lists);
-                createSlotPositions(response.lists);
-                createSingleSlots(response.lists);
+                setListsWithSlots(response.lists);
             }
-            toast.success(`Вітаємо на дошці ${response.title}`);
 
+            toast.success(`Вітаємо на дошці ${response.title}`);
         } catch (error) {
             console.error(error);
             toast.error("Не вдалося завантажити цю дошку");
@@ -104,7 +116,13 @@ export const Board = () => {
         fetchData();
     }, []);
 
-    const listComponents = lists.sort((a, b) => a.position - b.position).map((list) => <List
+    useEffect(() => {
+        if (boardsData?.lists) {
+            setListsWithSlots(boardsData.lists);
+        }
+    }, [boardsData]);
+
+    const listComponents = lists.slice().sort((a, b) => a.position - b.position).map((list) => <List
         key={list.id}
         id={list.id}
         boardId={params.board_id}
@@ -157,6 +175,10 @@ export const Board = () => {
                 numberOfLists={lists.length + 1}
                 onClose={() => setIsListModalOpen(false)}
                 fetchDataAgain={() => fetchData()} />
+        </Modal>
+
+        <Modal isOpen={isEditModalOpen || parsedSerializedState}>
+            <CardEditingModal isEditModalOpen={isEditModalOpen} cardData={cardData} listsData={lists} />
         </Modal>
     </div>
 }

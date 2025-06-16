@@ -51,7 +51,6 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
         <form className="modal-form">
             <label>Колір:</label>
             <input
-                className="color-input"
                 type="color"
                 value={backgroundColor}
                 onChange={(e) => setBackgroundColor(e.target.value)} />
@@ -61,6 +60,7 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
             <label>Зображення:</label>
             <input
                 type="file"
+                className="img-input"
                 onChange={(event) => { if (event.target.files) getBase64(event.target.files[0]) }}
             />
         </form>

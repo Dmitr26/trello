@@ -51,11 +51,12 @@ export const NewListModal: React.FC<NewListModalProps> = ({ id, numberOfLists, o
     return <>
         <form className="modal-form" onSubmit={SubmitHandler}>
             <label>Назва:</label>
-            <input className="name-input" type="text" value={listName} onChange={(e) => setListName(e.target.value)} />
+            <input type="text" value={listName} onChange={(e) => setListName(e.target.value)} />
         </form>
         <div className="warning">{warning}</div>
         <div className="buttons">
             <button onClick={() => postData()}>Створити список</button>
+            <div className="btn-space"></div>
             <button onClick={() => closeModal()}>Закрити</button>
         </div>
     </>

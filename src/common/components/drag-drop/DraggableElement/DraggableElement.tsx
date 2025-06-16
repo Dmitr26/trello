@@ -105,7 +105,6 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
     }, [onDrop, id, order]);
 
     useEffect(() => {
-
         const element = childRef?.current?.children[0] as HTMLElement;
 
         if (dragging) {

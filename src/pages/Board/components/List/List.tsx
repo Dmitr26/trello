@@ -163,6 +163,8 @@ export const List: React.FC<IFetch> = ({
                         list_id: id
                     }));
 
+                console.log(updatedCardsList);
+
                 try {
                     await api.put('/board/' + boardId + '/card', updatedCardsList);
                 } catch (error) {
@@ -178,40 +180,46 @@ export const List: React.FC<IFetch> = ({
         setSlotsToChange(slots);
     }, [slots]);
 
-    const cardsComponents = cards.sort((a, b) => a.position - b.position).map((card) => (<div className="card-with-slot" key={card.id}>
-        <DraggableElement
-            id={card.id}
-            parentId={id}
-            key={card.id}
-            order={card.position}
-            slots={slotsToChange}
-            onDrop={HandleCardPositionChange}
-            onDragStart={HandleDragStart}
-            onDragLeave={HandleDragLeave}
-            onDragEnter={HandleDragEnter} >
-            {(props) => <div {...props} className={classNames('cardWrapper', props.className)}>
-                {Object.values(slotsToChange[id])[card.position - 1] && topOrBottom && <div className="slot"></div>}
-                <Card
-                    key={card.id}
-                    id={card.id}
-                    listid={id}
-                    position={card.position}
-                    title={card.title}
-                    description={card.description}
-                    custom={card.custom}
-                    fetchData={() => fetchData()} />
-                {Object.values(slotsToChange[id])[card.position - 1] && !topOrBottom && <div className="slot"></div>}
-            </div>}
-        </DraggableElement>
-        {dragStartSlot && (card.position === dragStartSlotPosition) && <div className="slot"></div>}
-    </div>));
+    const cardsComponents = cards.slice().sort((a, b) => a.position - b.position).map((card) => (
+        <div className="card-with-slot" key={card.id}>
+            <DraggableElement
+                id={card.id}
+                parentId={id}
+                key={card.id}
+                order={card.position}
+                slots={slotsToChange}
+                onDrop={HandleCardPositionChange}
+                onDragStart={HandleDragStart}
+                onDragLeave={HandleDragLeave}
+                onDragEnter={HandleDragEnter} >
+                {(props) => <div {...props} className={classNames('cardWrapper', props.className)}>
+                    {Object.values(slotsToChange[id])[card.position - 1] && topOrBottom && <div className="slot"></div>}
+                    <Card
+                        key={card.id}
+                        id={card.id}
+                        listid={id}
+                        position={card.position}
+                        title={card.title}
+                        description={card.description}
+                        custom={card.custom}
+                        cardData={card} />
+                    {Object.values(slotsToChange[id])[card.position - 1] && !topOrBottom && <div className="slot"></div>}
+                </div>}
+            </DraggableElement>
+            {dragStartSlot && (card.position === dragStartSlotPosition) && <div className="slot"></div>}
+        </div>));
 
     return <div className="list">
         <div className="list-body">
             <div className="listTop">
                 <div className="listTitle">{title}</div>
                 <div>
-                    <img className="deleteIcon" src={CloseIcon} style={{ height: 22, width: 22, cursor: 'pointer' }} alt="No img" onClick={RemoveList} />
+                    <img
+                        className="deleteIcon"
+                        src={CloseIcon}
+                        style={{ height: 22, width: 22, cursor: 'pointer' }}
+                        alt="No img"
+                        onClick={RemoveList} />
                 </div>
             </div>
 

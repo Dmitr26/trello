@@ -72,7 +72,7 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
     return <>
         <form className="modal-form" onSubmit={SubmitHandler}>
             <label>Назва:</label>
-            <input className="name-input" type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} />
+            <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} />
         </form>
         <div className="label-margin"><label className="description-label" htmlFor={postTextAreaId}>Опис:</label></div>
         <textarea
@@ -83,7 +83,6 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
         <form className="modal-form" onSubmit={SubmitHandler}>
             <label>Дедлайн:</label>
             <input
-                className="deadline-input"
                 type="datetime-local"
                 value={cardDeadline}
                 onChange={(e) => setCardDeadline(e.target.value)} />
@@ -91,6 +90,7 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
         <div className="warning">{warning}</div>
         <div className="buttons">
             <button onClick={() => postData()}>Створити картку</button>
+            <div className="btn-space"></div>
             <button onClick={() => closeModal()}>Закрити</button>
         </div>
     </>
