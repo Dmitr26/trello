@@ -12,6 +12,8 @@
         height: 100%;
         box-shadow: 5px 5px 5px $shadow-color;
         overflow: hidden;
+        display: flex;
+        justify-content: space-between;
         @include make-bold-font(20px, $font-color);
         @include make-border-box(12px 20px);
         @include raduis-without-border(10px);

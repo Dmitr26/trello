@@ -1,16 +1,12 @@
 import { useState } from 'react';
+import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
 import { WordPattern } from '../../../WordPattern';
-import { toast } from 'react-toastify';
-import api from '../../../../api/request';
+import { closeNewBoardModal, fetchBoards, postBoard } from '../../../store/homeSlice';
 
-interface NewBoardModalProps {
-    onClose: () => void,
-    fetchDataAgain: () => void
-}
+export const NewBoardModal: React.FC = () => {
 
-export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchDataAgain }) => {
-
+    const dispatch = useDispatch();
     const [boardName, setBoardName] = useState<string>('');
     const [boardColor, setBoardColor] = useState<string>('#0875b0');
     const [warning, setWarning] = useState<string>('');
@@ -18,7 +14,7 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
     const closeModal = () => {
         setBoardName('');
         setWarning('');
-        onClose();
+        dispatch(closeNewBoardModal());
     }
 
     const postData = async () => {
@@ -33,21 +29,8 @@ export const NewBoardModal: React.FC<NewBoardModalProps> = ({ onClose, fetchData
             return;
         }
 
-        try {
-            await api.post('/board', {
-                title: boardName,
-                custom: {
-                    background: boardColor
-                }
-            });
-            toast.success(`Дошку "${boardName}" успішно створено`);
-            fetchDataAgain();
-            closeModal();
-        } catch (error) {
-            console.error(error);
-            toast.error("Не вдалося створити нову дошку");
-            closeModal();
-        }
+        dispatch<any>(postBoard({ name: boardName, color: boardColor })).then(() => dispatch<any>(fetchBoards()));
+        closeModal();
     };
 
     return <>

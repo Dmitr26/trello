@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { IList } from "../../../interfaces/IList";
 import { ICard } from "../../../interfaces/ICard";
-import { fetchBoardData, closeModal } from "../../../../common/store/modalSlice";
-import api from '../../../../api/request';
+import { closeEditModal } from "../../../../common/store/modalSlice";
+import { fetchBoardData } from '../../../store/boardSlice';
+import { postNewCard } from "../../../store/listSlice";
 
 interface NewCardModalProps {
     listsData: IList[],
@@ -31,16 +32,6 @@ export const CardChangePositionModal: React.FC<NewCardModalProps> = ({ listsData
 
     const replaceCard = async () => {
         if (newListId !== 0 && newPosition !== 0) {
-            await api.post('/board/' + cardData?.parentId + '/card', {
-                title: cardData?.title,
-                list_id: newListId,
-                position: newPosition,
-                description: cardData?.description,
-                custom: {
-                    deadline: cardData?.custom.deadline
-                }
-            });
-            await api.delete('/board/' + cardData?.parentId + '/card/' + cardData?.id);
 
             let oldPosition = cardData?.position;
             let parentCardList: ICard[] = [];
@@ -56,19 +47,24 @@ export const CardChangePositionModal: React.FC<NewCardModalProps> = ({ listsData
                 .map((card) => ({
                     id: card.id,
                     position: card.position > Number(oldPosition) ? card.position - 1 : card.position,
-                    list_id: cardData?.listid
+                    list_id: Number(cardData?.listid)
                 }));
 
-            try {
-                await api.put('/board/' + cardData?.parentId + '/card', updatedCardsList);
-            } catch (error) {
-                console.error("Error updating card positions:", error);
-            }
-
-            dispatch<any>(fetchBoardData(String(params.board_id)));
+            dispatch<any>(postNewCard({
+                boardId: String(cardData?.parentId), newCard: {
+                    id: Number(cardData?.id),
+                    title: String(cardData?.title),
+                    listid: newListId,
+                    position: newPosition,
+                    description: String(cardData?.description),
+                    custom: {
+                        deadline: String(cardData?.custom.deadline)
+                    }
+                }, newPositions: updatedCardsList
+            })).then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
             setWarning('');
             onClose();
-            dispatch(closeModal());
+            dispatch(closeEditModal());
             navigate(`/board/${cardData?.parentId}`);
             localStorage.removeItem('state');
             localStorage.removeItem('data');
@@ -92,11 +88,7 @@ export const CardChangePositionModal: React.FC<NewCardModalProps> = ({ listsData
 
     useEffect(() => {
         let nums = [];
-
-        for (let i = 0; i < positions + 1; i++) {
-            nums.push(i);
-        }
-
+        for (let i = 0; i < positions + 1; i++) nums.push(i);
         setPositionNumbers(nums);
     }, [positions]);
 

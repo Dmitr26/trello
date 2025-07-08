@@ -28,6 +28,26 @@
         }
     }
 
+    .loading {
+        position: relative;
+        margin: 100px auto;
+        text-align: center;
+
+        .loader {
+            @include loader-style();
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    }
+
     .boards {
         margin: 20px 40px 0;
         min-height: 10%;

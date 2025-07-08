@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICard } from '../interfaces/ICard';
-import { IList } from '../interfaces/IList';
 import { IBoard } from '../interfaces/IBoard';
+import { toast } from 'react-toastify';
 import api from '../../api/request';
 
 interface ModalState {
@@ -16,11 +16,35 @@ const initialState: ModalState = {
     boardsData: null
 };
 
-export const fetchBoardData = createAsyncThunk(
-    'modal/fetchBoardData',
-    async (id: string) => {
-        const response = await api.get<{ title: string, lists: IList[] }, IBoard>('/board/' + id);
-        return response;
+type CreatedCardData = {
+    boardId: string;
+    cardId: number;
+    cardData: {
+        title: string,
+        description: string,
+        custom: {
+            deadline: string
+        },
+        list_id: number
+    }
+};
+
+export const updateCard = createAsyncThunk(
+    'list/removeList',
+    async ({ boardId, cardId, cardData }: CreatedCardData) => {
+        try {
+            await api.put('/board/' + boardId + '/card/' + cardId, {
+                title: cardData.title,
+                description: cardData.description,
+                custom: {
+                    deadline: cardData.custom.deadline
+                },
+                list_id: cardData.list_id
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error("Виникли неполадки! Зміни можуть не зберегтися!");
+        }
     }
 );
 
@@ -28,23 +52,18 @@ export const modalSlice = createSlice({
     name: 'modal',
     initialState,
     reducers: {
-        openModal: (state, action: PayloadAction<{
+        openEditModal: (state, action: PayloadAction<{
             cardData: ICard
         }>) => {
             state.isEditModalOpen = true;
             state.cardData = action.payload.cardData;
         },
-        closeModal: (state) => {
+        closeEditModal: (state) => {
             state.isEditModalOpen = false;
             state.cardData = null;
         },
-    },
-    extraReducers: (builder) => {
-        builder.addCase(fetchBoardData.fulfilled, (state, action) => {
-            state.boardsData = action.payload;
-        });
-    },
+    }
 });
 
-export const { openModal, closeModal } = modalSlice.actions;
+export const { openEditModal, closeEditModal } = modalSlice.actions;
 export default modalSlice.reducer;

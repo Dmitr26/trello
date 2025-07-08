@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import Markdown from "react-markdown";
-import { ICard } from "../../../../common/interfaces/ICard"
-import { openModal } from "../../../../common/store/modalSlice";
 import SettingIcon from '../../../../common/icons/edit_icon.svg';
+import { ICard } from "../../../../common/interfaces/ICard";
+import { openEditModal } from "../../../../common/store/modalSlice";
 import './Card.scss';
 
 interface IFetch extends ICard {
@@ -20,7 +20,7 @@ export const Card: React.FC<IFetch> = ({ id, title, description, custom, cardDat
 
     const openEditingModal = () => {
         navigate('/board/' + params.board_id + '/card/' + id);
-        dispatch(openModal({ cardData: editableData }));
+        dispatch(openEditModal({ cardData: editableData }));
     }
 
     useEffect(() => {
@@ -31,7 +31,11 @@ export const Card: React.FC<IFetch> = ({ id, title, description, custom, cardDat
         <div className="cardTop">
             <div className="cardTitle">{title}</div>
             <div>
-                <img className="deleteIcon" src={SettingIcon} style={{ height: 25, width: 25, cursor: 'pointer' }} alt="No img" onClick={openEditingModal} />
+                <img
+                    className="deleteIcon"
+                    src={SettingIcon}
+                    style={{ height: 25, width: 25, cursor: 'pointer' }}
+                    alt="No img" onClick={openEditingModal} />
             </div>
         </div>
         <div className="cardDescription"><Markdown>{description}</Markdown></div>

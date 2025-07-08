@@ -1,46 +1,68 @@
 import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from "react-redux";
 import { IList } from "../../../../common/interfaces/IList";
+import { ICard } from '../../../../common/interfaces/ICard';
 import { Card } from "../Card/Card";
+import CloseIcon from '../../../../common/icons/close_icon.svg';
 import { Modal } from '../../../../common/components/modals/Modal';
 import { NewCardModal } from '../../../../common/components/modals/board/NewCardModal';
 import DraggableElement from '../../../../common/components/drag-drop/DraggableElement/DraggableElement';
 import DropContainer from '../../../../common/components/drag-drop/DropContainer/DropContainer';
-import CloseIcon from '../../../../common/icons/close_icon.svg';
-import { DragStartHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
-import { DragLeaveHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
-import { DragEnterHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
-import { DropHandler } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
+import {
+    DropHandler,
+    DragStartHandler,
+    DragEnterHandler,
+    DragLeaveHandler
+} from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
+import { RootState } from '../../../../common/store/store';
+import { startIsLoading, finishIsLoading, passListsData, fetchBoardData } from '../../../../common/store/boardSlice';
+import {
+    openThisCardModal,
+    setTopOrBottom,
+    setSlots,
+    setSingleSlots,
+    removeList,
+    postNewCard
+} from '../../../../common/store/listSlice';
 import classNames from 'classnames';
-import api from '../../../../api/request';
 import './List.scss';
 
-interface IFetch extends IList {
-    fetchData: () => any
-}
-
-export const List: React.FC<IFetch> = ({
+export const List: React.FC<IList> = ({
     id,
     boardId,
+    position,
     title,
     cards,
-    fetchData,
-    slots,
-    changeSlots,
-    singleSlot,
-    changeSingleSlot,
-    topOrBottom,
-    setTopOrBottom
+    listsData
 }) => {
 
-    const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+    const dispatch = useDispatch();
+    const { isCardModalOpen, topOrBottom, slots, singleSlots } = useSelector((state: RootState) => state.list);
+
     const [slotsToChange, setSlotsToChange] = useState<{ [id: string]: boolean[] }>(slots);
     const [dragStartSlot, setDragStartSlot] = useState(false);
     const [dragStartSlotPosition, setDragStartSlotPosition] = useState(0);
     const [slotToClose, setSlotToClose] = useState(0);
 
-    const RemoveList = async () => {
-        await api.delete('/board/' + boardId + '/list/' + id);
-        fetchData();
+    const RemoveList = () => {
+
+        let oldPosition = position;
+
+        const updatedListPositions = listsData
+            .filter((list) => list.id !== id)
+            .map((list) => ({
+                id: list.id,
+                position: list.position > Number(oldPosition) ? list.position - 1 : list.position
+            }));
+
+        dispatch<any>(removeList({
+            boardId: String(boardId),
+            listId: id,
+            listName: title,
+            newPositions: updatedListPositions
+        })).then(() => {
+            dispatch<any>(fetchBoardData(String(boardId)));
+        });
     }
 
     const defineOrder = (
@@ -65,7 +87,7 @@ export const List: React.FC<IFetch> = ({
     }
 
     const resetSlotsToFalse = (slotArray: boolean[]): boolean[] => {
-        let resetSlots = slotArray;
+        let resetSlots = [...slotArray];
         resetSlots.map((_, i: number) => {
             return resetSlots[i] = false;
         });
@@ -92,34 +114,33 @@ export const List: React.FC<IFetch> = ({
             if (slots[thisid]) {
 
                 if (slots[thisid].length === 0) {
-                    singleSlot[thisid] = true;
+                    const newSingleSlots: { [id: string]: boolean } = { ...singleSlots };
+                    newSingleSlots[thisid] = true;
+                    dispatch(setSingleSlots({ data: newSingleSlots }));
                 }
 
                 setSlotToClose(Number(thisid));
-                let slotToOpen = slotsToChange[thisid];
+                let slotToOpen = [...slotsToChange[thisid]];
                 if (typeof slotToOpen != "undefined") {
                     slotToOpen.map((_, i: number) => {
-                        if (i === (Number(order) - 1)) {
-                            return slotToOpen[i] = true;
-                        } else {
-                            return slotToOpen[i] = false;
-                        }
+                        return slotToOpen[i] = (i === (Number(order) - 1)) ? true : false;
                     });
-                    changeSlots({ ...slots, [thisid]: slotToOpen });
-                    setTopOrBottom(topOrBottomSlot);
+                    dispatch(setSlots({ data: { ...slots, [thisid]: slotToOpen } }));
+                    dispatch(setTopOrBottom({ data: topOrBottomSlot }));
                 }
             }
         } else {
 
-            Object.entries(singleSlot).map(([key]) => {
-                if (singleSlot[key]) {
-                    changeSingleSlot({ ...singleSlot, [key]: false });
+            Object.entries(singleSlots).map(([key]) => {
+                if (singleSlots[key]) {
+                    const singleSlotsFalse = { ...singleSlots, [key]: false };
+                    dispatch(setSingleSlots({ data: singleSlotsFalse }));
                 }
             })
 
             if (slotToClose !== 0) {
                 let resetSlots = resetSlotsToFalse(slots[slotToClose]);
-                changeSlots({ ...slots, [slotToClose]: resetSlots });
+                dispatch(setSlots({ data: { ...slots, [slotToClose]: resetSlots } }));
                 setSlotToClose(0);
             }
         }
@@ -139,21 +160,47 @@ export const List: React.FC<IFetch> = ({
             let resetSlots = resetSlotsToFalse(slotsToChange[id]);
             setSlotsToChange({ ...slotsToChange, [id]: resetSlots });
             setDragStartSlot(false);
+            setDragStartSlotPosition(0);
             return;
         }
 
         cards.map(async (card) => {
+
             if (card.id === dragItemId) {
-                await api.post('/board/' + boardId + '/card', {
+
+                const newCard: ICard = {
+                    id: dragItemId,
                     title: card.title,
-                    list_id: dropContainerId,
+                    listid: Number(dropContainerId),
                     position: defineOrder(itemUnderDragItem, topOffset, numberOfCards, topOrBottom),
                     description: card.description,
                     custom: {
                         deadline: card.custom.deadline
                     }
-                });
-                await api.delete('/board/' + boardId + '/card/' + card.id);
+                }
+
+                const listsDataParse = JSON.parse(JSON.stringify(listsData));
+
+                const newListsData = listsDataParse.reduce((accumulator: IList[], currentValue: IList) => {
+                    if (currentValue.id === id) {
+                        const newCards = currentValue.cards.filter(card => card.id !== dragItemId);
+                        currentValue.cards = newCards;
+                        currentValue.cards.map((card) => {
+                            card.position = card.position > Number(dragltemOrder) ? card.position - 1 : card.position;
+                        });
+                    }
+                    if (currentValue.id === dropContainerId) {
+                        currentValue.cards.map((card) => {
+                            card.position = card.position >= newCard.position ? card.position + 1 : card.position;
+                        });
+                        currentValue.cards.push(newCard);
+                    }
+                    accumulator.push(currentValue);
+                    return accumulator;
+                }, []);
+
+                dispatch(passListsData({ data: newListsData }));
+                dispatch(startIsLoading());
 
                 const updatedCardsList = cards
                     .filter((card) => card.id !== dragItemId)
@@ -163,14 +210,12 @@ export const List: React.FC<IFetch> = ({
                         list_id: id
                     }));
 
-                console.log(updatedCardsList);
-
-                try {
-                    await api.put('/board/' + boardId + '/card', updatedCardsList);
-                } catch (error) {
-                    console.error("Error updating card positions:", error);
-                }
-                fetchData();
+                dispatch<any>(postNewCard({
+                    boardId: String(boardId), newCard: newCard, newPositions: updatedCardsList
+                })).then(() => {
+                    dispatch<any>(fetchBoardData(String(boardId)));
+                    dispatch(finishIsLoading());
+                });
             }
         });
         setSlotToClose(0);
@@ -179,6 +224,10 @@ export const List: React.FC<IFetch> = ({
     useEffect(() => {
         setSlotsToChange(slots);
     }, [slots]);
+
+    useEffect(() => {
+        setDragStartSlot(false);
+    }, [listsData]);
 
     const cardsComponents = cards.slice().sort((a, b) => a.position - b.position).map((card) => (
         <div className="card-with-slot" key={card.id}>
@@ -226,23 +275,21 @@ export const List: React.FC<IFetch> = ({
             <DropContainer id={id} key={id}>
                 {(props) => (
                     <div {...props} className={classNames('listContent', props.className)}>
-                        {singleSlot[id] && <div className="slot"></div>}
+                        {singleSlots[id] && <div className="slot"></div>}
                         <div className="cardsArea">
                             {cardsComponents}
                         </div>
                     </div>
                 )}
             </DropContainer>
-            <button onClick={() => setIsCardModalOpen(true)} onDragOver={(e) => { console.log(e) }}>Додати картку...</button>
+            <button onClick={() => dispatch(openThisCardModal({ id: String(id) }))}>Додати картку...</button>
         </div>
 
-        <Modal isOpen={isCardModalOpen}>
+        <Modal isOpen={isCardModalOpen[id]}>
             <NewCardModal
                 id={boardId}
                 numberOfCards={cards.length + 1}
-                listid={id}
-                onClose={() => setIsCardModalOpen(false)}
-                fetchDataAgain={() => fetchData()} />
+                listid={id} />
         </Modal>
     </div>
 }

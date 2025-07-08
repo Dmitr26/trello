@@ -1,19 +1,18 @@
 import { useState } from 'react';
 import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
 import { WordPattern } from '../../../WordPattern';
-import { toast } from 'react-toastify';
-import api from '../../../../api/request';
+import { closeBoardNameModal, fetchBoardData, changeBoardName } from '../../../store/boardSlice';
 
 interface BoardNameChangeProps {
-    titleToChange: string,
-    onClose: () => void,
-    fetchDataAgain: () => void
+    titleToChange: string
 }
 
-export const BoardNameChangeModal: React.FC<BoardNameChangeProps> = ({ titleToChange, onClose, fetchDataAgain }) => {
+export const BoardNameChangeModal: React.FC<BoardNameChangeProps> = ({ titleToChange }) => {
 
     const params = useParams();
+    const dispatch = useDispatch();
     const [newTitle, setNewTitle] = useState<string>(titleToChange);
     const [warning, setWarning] = useState<string>('');
 
@@ -29,29 +28,17 @@ export const BoardNameChangeModal: React.FC<BoardNameChangeProps> = ({ titleToCh
         }
 
         if (data !== '') {
-            try {
-                console.log(data);
-                await api.put('/board/' + params.board_id, {
-                    title: data
-                });
-                fetchDataAgain();
-                toast.success("Назву дошки змінено");
-                setWarning('');
-                onClose();
-            } catch (error) {
-                console.error(error);
-                toast.error("Назву дошки не вдалося змінити");
-                onClose();
-            }
+            dispatch<any>(changeBoardName({ id: String(params.board_id), title: data }))
+                .then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
+            setWarning('');
+            dispatch(closeBoardNameModal());
         } else {
             setWarning('Будь ласка, вкажіть назву для дошки!');
         }
     }
 
     const postDataByEnter = async (key: string) => {
-        if (key === 'Enter') {
-            postData(newTitle);
-        }
+        if (key === 'Enter') postData(newTitle);
     }
 
     const postDataOnBlur = async (e: string) => {

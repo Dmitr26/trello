@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useParams } from "react-router";
-import { toast } from 'react-toastify';
-import api from '../../../../api/request';
+import { useDispatch } from "react-redux";
+import { closeBackgroundModal, fetchBoardData, changeBackground } from '../../../store/boardSlice';
 
 interface BoardNameChangeProps {
-    bgColorToChange: string,
-    onClose: () => void,
-    fetchDataAgain: () => void
+    bgColorToChange: string
 }
 
-export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgColorToChange, onClose, fetchDataAgain }) => {
+export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgColorToChange }) => {
 
     const params = useParams();
+    const dispatch = useDispatch();
     const [backgroundColor, setBackgroundColor] = useState<string>(bgColorToChange);
     const [backgroundImage, setBackgroundImage] = useState<string>('');
 
@@ -30,21 +29,9 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
     }
 
     const postData = async () => {
-        try {
-            await api.put('/board/' + params.board_id, {
-                custom: {
-                    background: backgroundColor,
-                    backgroundImage: backgroundImage
-                }
-            });
-            fetchDataAgain();
-            toast.success("Стиль дошки змінено");
-            onClose();
-        } catch (error) {
-            console.error(error);
-            toast.error("Стиль дошки не вдалося змінити");
-            onClose();
-        }
+        dispatch<any>(changeBackground({ id: String(params.board_id), bgColor: backgroundColor, bgImage: backgroundImage }))
+            .then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
+        dispatch(closeBackgroundModal());
     }
 
     return <>
@@ -66,7 +53,7 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
         </form>
         <div className="buttons">
             <button onClick={() => postData()}>Змінити колір</button>
-            <button onClick={() => onClose()}>Закрити</button>
+            <button onClick={() => dispatch(closeBackgroundModal())}>Закрити</button>
         </div>
     </>
 }

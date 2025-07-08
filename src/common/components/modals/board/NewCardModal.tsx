@@ -1,19 +1,19 @@
 import { useId, useState } from 'react';
+import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
 import { WordPattern } from '../../../WordPattern';
-import { toast } from 'react-toastify';
-import api from '../../../../api/request';
+import { fetchBoardData } from '../../../store/boardSlice';
+import { closeThisCardModal, createNewCard } from '../../../store/listSlice';
 
 interface NewCardModalProps {
     id: string | undefined,
     listid: number,
-    numberOfCards: number,
-    onClose: () => void,
-    fetchDataAgain: () => void
+    numberOfCards: number
 }
 
-export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOfCards, onClose, fetchDataAgain }) => {
+export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOfCards }) => {
 
+    const dispatch = useDispatch();
     const postTextAreaId = useId();
     const [warning, setWarning] = useState<string>('');
     const [cardName, setCardName] = useState<string>('');
@@ -25,7 +25,7 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
         setCardDescription('');
         setCardDeadline('');
         setWarning('');
-        onClose();
+        dispatch(closeThisCardModal({ id: String(listid) }));
     }
 
     const postData = async () => {
@@ -49,24 +49,19 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({ id, listid, numberOf
             return;
         }
 
-        try {
-            await api.post('/board/' + id + '/card', {
+        dispatch<any>(createNewCard({
+            boardId: String(id), newCard: {
+                id: 0,
                 title: cardName,
-                list_id: listid,
+                listid: listid,
                 position: numberOfCards,
                 description: cardDescription,
                 custom: {
                     deadline: cardDeadline.replace(/T/g, ' ')
                 }
-            });
-            toast.success(`Картку "${cardName}" успішно створено`);
-            fetchDataAgain();
-            closeModal();
-        } catch (error) {
-            console.error(error);
-            toast.error("Не вдалося створити нову картку");
-            closeModal();
-        }
+            }
+        })).then(() => dispatch<any>(fetchBoardData(String(id))));
+        closeModal();
     }
 
     return <>

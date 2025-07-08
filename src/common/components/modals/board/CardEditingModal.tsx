@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { ICard } from "../../../interfaces/ICard";
 import { IList } from "../../../interfaces/IList";
-import { closeModal } from "../../../store/modalSlice";
-import { fetchBoardData } from "../../../store/modalSlice";
-import api from '../../../../api/request';
+import { closeEditModal, updateCard } from "../../../store/modalSlice";
+import { fetchBoardData } from '../../../store/boardSlice';
+import { removeCard } from "../../../store/listSlice";
 import { Modal } from "../Modal";
 import { CardChangePositionModal } from "./CardChangePositionModal";
 import { WordPattern } from "../../../WordPattern";
@@ -41,8 +41,8 @@ export const CardEditingModal: React.FC<BoardNameChangeProps> = ({ isEditModalOp
             const serializedData = JSON.stringify(cardData);
             localStorage.setItem('state', serializedState);
             localStorage.setItem('data', serializedData);
-        } catch (e) {
-            // Ignore write errors;
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -69,7 +69,7 @@ export const CardEditingModal: React.FC<BoardNameChangeProps> = ({ isEditModalOp
     }
 
     const closeEditingModal = () => {
-        dispatch(closeModal());
+        dispatch(closeEditModal());
         setWarning('');
         navigate(`/board/${dataToEdit?.parentId}`);
         localStorage.removeItem('state');
@@ -98,22 +98,22 @@ export const CardEditingModal: React.FC<BoardNameChangeProps> = ({ isEditModalOp
             return;
         }
 
-        await api.put('/board/' + params.board_id + '/card/' + cardId, {
-            title: cardName,
-            description: cardDescription,
-            custom: {
-                deadline: cardDeadline
-            },
-            list_id: listId
-        });
-
-        dispatch<any>(fetchBoardData(String(params.board_id)));
+        dispatch<any>(updateCard({
+            boardId: String(params.board_id),
+            cardId: cardId,
+            cardData: {
+                title: cardName,
+                description: cardDescription,
+                custom: {
+                    deadline: cardDeadline
+                },
+                list_id: listId
+            }
+        })).then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
         closeEditingModal();
     }
 
     const deleteCard = async () => {
-        await api.delete('/board/' + params.board_id + '/card/' + cardId);
-
         let oldPosition = cardData?.position;
         let parentCardList: ICard[] = [];
 
@@ -131,13 +131,8 @@ export const CardEditingModal: React.FC<BoardNameChangeProps> = ({ isEditModalOp
                 list_id: cardData?.listid
             }));
 
-        try {
-            await api.put('/board/' + cardData?.parentId + '/card', updatedCardsList);
-        } catch (error) {
-            console.error("Error updating card positions:", error);
-        }
-
-        dispatch<any>(fetchBoardData(String(params.board_id)));
+        dispatch<any>(removeCard({ boardId: String(params.board_id), cardId: cardId, newPositions: updatedCardsList }))
+            .then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
         closeEditingModal();
     }
 

@@ -37,3 +37,14 @@ $card-bg-color: #ffffff;
     border: 1px solid $input-border-color;
     border-radius: 10px;
 }
+
+@mixin loader-style() {
+    width: 70px;
+    height: 70px;
+    border: 10px solid $header-color;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}

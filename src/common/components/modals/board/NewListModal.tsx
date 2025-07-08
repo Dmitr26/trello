@@ -1,25 +1,25 @@
 import { useState } from 'react';
+import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
 import { WordPattern } from '../../../WordPattern';
-import { toast } from 'react-toastify';
-import api from '../../../../api/request';
+import { closeListModal, fetchBoardData, createNewList } from '../../../store/boardSlice';
 
 interface NewListModalProps {
-    id: string | undefined,
-    numberOfLists: number,
-    onClose: () => void,
-    fetchDataAgain: () => void
+    numberOfLists: number
 }
 
-export const NewListModal: React.FC<NewListModalProps> = ({ id, numberOfLists, onClose, fetchDataAgain }) => {
+export const NewListModal: React.FC<NewListModalProps> = ({ numberOfLists }) => {
 
+    const params = useParams();
+    const dispatch = useDispatch();
     const [warning, setWarning] = useState<string>('');
     const [listName, setListName] = useState<string>('');
 
     const closeModal = () => {
         setListName('');
         setWarning('');
-        onClose();
+        dispatch(closeListModal());
     }
 
     const postData = async () => {
@@ -33,19 +33,9 @@ export const NewListModal: React.FC<NewListModalProps> = ({ id, numberOfLists, o
             return;
         }
 
-        try {
-            await api.post('/board/' + id + '/list', {
-                title: listName,
-                position: numberOfLists
-            });
-            toast.success(`Список "${listName}" успішно створено`);
-            fetchDataAgain();
-            closeModal();
-        } catch (error) {
-            console.error(error);
-            toast.error("Не вдалося створити новий список");
-            closeModal();
-        }
+        dispatch<any>(createNewList({ id: String(params.board_id), name: listName, position: numberOfLists }))
+            .then(() => dispatch<any>(fetchBoardData(String(params.board_id))));
+        dispatch(closeListModal());
     }
 
     return <>
