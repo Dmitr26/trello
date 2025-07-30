@@ -45,8 +45,8 @@ export const fetchBoardData = createAsyncThunk(
     'board/fetchBoardData',
     async (id: string, { rejectWithValue }) => {
         try {
-            const response = await api.get<{ title: string, lists: IList[] }, IBoard>('/board/' + id);
-            return response;
+            const response = await api.get('/board/' + id);
+            return response.data;
         } catch (error) {
             return rejectWithValue(error);
         }
@@ -133,11 +133,13 @@ export const boardSlice = createSlice({
         clearBoardData: (state) => {
             state.boardsData = null;
         },
+        clearListsData: (state) => {
+            state.listsData = [];
+        },
         passListsData: (state, action: PayloadAction<{
             data: IList[];
         }>) => {
             state.listsData = action.payload.data;
-            console.log(state.listsData);
         }
     },
     extraReducers: (builder) => {
@@ -160,6 +162,7 @@ export const {
     startIsLoading,
     finishIsLoading,
     clearBoardData,
+    clearListsData,
     passListsData
 } = boardSlice.actions;
 export default boardSlice.reducer;

@@ -15,7 +15,7 @@ import {
     DragLeaveHandler
 } from '../../../../common/components/drag-drop/DraggableElement/DraggableElementProps';
 import { RootState } from '../../../../common/store/store';
-import { startIsLoading, finishIsLoading, passListsData, fetchBoardData } from '../../../../common/store/boardSlice';
+import { startIsLoading, finishIsLoading, passListsData, fetchBoardData, clearBoardData } from '../../../../common/store/boardSlice';
 import {
     openThisCardModal,
     setTopOrBottom,
@@ -168,7 +168,7 @@ export const List: React.FC<IList> = ({
 
             if (card.id === dragItemId) {
 
-                const newCard: ICard = {
+                let newCard: ICard = {
                     id: dragItemId,
                     title: card.title,
                     listid: Number(dropContainerId),

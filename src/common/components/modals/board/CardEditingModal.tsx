@@ -8,7 +8,7 @@ import { fetchBoardData } from '../../../store/boardSlice';
 import { removeCard } from "../../../store/listSlice";
 import { Modal } from "../Modal";
 import { CardChangePositionModal } from "./CardChangePositionModal";
-import { WordPattern } from "../../../WordPattern";
+import { WordPattern } from "../../../patterns/WordPattern";
 
 interface BoardNameChangeProps {
     isEditModalOpen: boolean;

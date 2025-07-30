@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
-import { WordPattern } from '../../../WordPattern';
+import { WordPattern } from '../../../patterns/WordPattern';
 import { fetchBoardData } from '../../../store/boardSlice';
 import { closeThisCardModal, createNewCard } from '../../../store/listSlice';
 

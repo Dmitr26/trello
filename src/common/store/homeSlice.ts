@@ -46,8 +46,8 @@ export const postBoard = createAsyncThunk(
 export const fetchBoards = createAsyncThunk(
     'home/fetchBoards',
     async () => {
-        const response = await api.get<IBoard[], { boards: IBoard[] }>('/board');
-        return response.boards;
+        const response = await api.get('/board');
+        return response.data.boards;
     }
 );
 

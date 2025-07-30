@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
-import { WordPattern } from '../../../WordPattern';
+import { WordPattern } from '../../../patterns/WordPattern';
 import { closeBoardNameModal, fetchBoardData, changeBoardName } from '../../../store/boardSlice';
 
 interface BoardNameChangeProps {

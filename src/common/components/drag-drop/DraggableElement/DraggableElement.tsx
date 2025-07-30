@@ -1,11 +1,14 @@
 import { FC, useCallback, PointerEventHandler, useState, useRef, useEffect } from "react";
-import './DraggableElement.scss';
 import Props from "./DraggableElementProps";
+import './DraggableElement.scss';
 
 const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onDrop, onDragStart, onDragLeave, onDragEnter }) => {
     const childRef = useRef<HTMLElement>(null);
     const startPointerPosition = useRef<{ top: number, left: number }>(null);
     const [dragging, setDragging] = useState(false);
+
+    let initTop = '';
+    let initLeft = '';
 
     const handleDragStart = useCallback<PointerEventHandler<HTMLElement>>((event) => {
 
@@ -16,6 +19,9 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
             top: childRect.top - event.clientY,
             left: childRect.left - event.clientX
         }
+
+        initTop = startPointerPosition.current.top + 'px';
+        initLeft = startPointerPosition.current.left + 'px';
 
         if (document.elementFromPoint(event.clientX, event.clientY)?.classList.value !== 'deleteIcon') {
             onDragStart?.({
@@ -32,14 +38,13 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
         if (!childRef.current || !startPointerPosition.current) return;
 
         const { top, left } = startPointerPosition.current;
-        const childRect = childRef.current.getBoundingClientRect();
 
         childRef.current.style.top = event.clientY + top + 'px';
         childRef.current.style.left = event.clientX + left + 'px';
 
         const deeperElementUnderItem = document.elementFromPoint(
-            event.clientX + left + childRect.width / 2,
-            event.clientY + top + childRect.height / 2
+            event.clientX,
+            event.clientY
         );
 
         if (deeperElementUnderItem?.getAttribute("class") !== 'slot') {
@@ -69,12 +74,9 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
 
         if (!childRef.current || !startPointerPosition.current) return;
 
-        const { top, left } = startPointerPosition.current;
-        const childRect = childRef.current.getBoundingClientRect();
-
         const deeperElementUnderItem = document.elementFromPoint(
-            event.clientX + left + childRect.width / 2,
-            event.clientY + top + childRect.height / 2
+            event.clientX,
+            event.clientY
         );
 
         const closestDropContainer = deeperElementUnderItem?.closest('[data-drop-container]');
@@ -88,7 +90,11 @@ const DraggableElement: FC<Props> = ({ id, parentId, order, slots, children, onD
 
         setDragging(false);
 
-        if (!closestDropContainer) return;
+        if (!closestDropContainer) {
+            childRef.current.style.top = initTop;
+            childRef.current.style.left = initLeft;
+            return;
+        };
 
         const ContainerId = closestDropContainer.getAttribute('data-drop-container');
 

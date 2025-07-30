@@ -15,7 +15,6 @@ export const BoardBackgroundChangeModal: React.FC<BoardNameChangeProps> = ({ bgC
     const [backgroundImage, setBackgroundImage] = useState<string>('');
 
     const getBase64 = (file: Blob) => {
-        console.log(file);
         let reader = new FileReader();
         if (file) {
             reader.readAsDataURL(file);

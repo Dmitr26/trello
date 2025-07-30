@@ -39,6 +39,12 @@
             @include make-bold-font(15px, $font-color);
             @include raduis-without-border(10px);
         }
+
+        .buttons {
+            width: 25%;
+            display: flex;
+            justify-content: space-between;
+        }
     }
 
     .lists {

@@ -12,7 +12,8 @@ import { BoardBackgroundChangeModal } from '../../common/components/modals/board
 import { NewListModal } from '../../common/components/modals/board/NewListModal';
 import { CardEditingModal } from '../../common/components/modals/board/CardEditingModal';
 import { RootState } from '../../common/store/store';
-import { openListModal, openBoardNameModal, openBackgroundModal, fetchBoardData, clearBoardData } from '../../common/store/boardSlice';
+import { removeBoard } from '../../common/store/homeSlice';
+import { openListModal, openBoardNameModal, openBackgroundModal, fetchBoardData } from '../../common/store/boardSlice';
 import { setSlots, setSingleSlots, updateCardModal } from '../../common/store/listSlice';
 import { toast } from 'react-toastify';
 import './Board.scss';
@@ -45,10 +46,11 @@ export const Board = () => {
         backgroundImage: ""
     });
 
-    const returnHome = () => {
-        dispatch(clearBoardData());
-        navigate(`/`);
-    }
+    const RemoveBoard = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        dispatch<any>(removeBoard({ id: String(params.board_id), title: boardData.title })).then(() => window.location.reload());
+        navigate('/', { replace: true });
+    };
 
     const createSlotPositions = (lists: IList[]) => {
         if (lists) {
@@ -126,12 +128,16 @@ export const Board = () => {
         backgroundRepeat: 'no-repeat'
     }}>
         <div className='header'>
-            <button onClick={() => returnHome()}><ReturnIcon /></button>
+            <button onClick={() => navigate(`/`)}><ReturnIcon /></button>
             <div className="title">{boardData.title + ' '}
                 <button className="edit" onClick={() => dispatch(openBoardNameModal())}><EditIcon /></button>
                 <button className="edit" onClick={() => dispatch(openBackgroundModal())}><BGIcon /></button>
             </div>
-            <button onClick={() => dispatch(openListModal())}>Створити новий список</button>
+            <div className="buttons">
+                <button onClick={() => dispatch(openListModal())}>Створити новий список</button>
+                <button onClick={(e) => RemoveBoard(e)}>Видалити дошку</button>
+            </div>
+
         </div>
         <div className="lists">
             {listComponents}

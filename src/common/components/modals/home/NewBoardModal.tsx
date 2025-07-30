@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { SubmitHandler } from '../../../SubmitHandler';
-import { WordPattern } from '../../../WordPattern';
+import { WordPattern } from '../../../patterns/WordPattern';
 import { closeNewBoardModal, fetchBoards, postBoard } from '../../../store/homeSlice';
 
 export const NewBoardModal: React.FC = () => {

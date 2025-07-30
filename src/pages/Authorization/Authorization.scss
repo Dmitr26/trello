@@ -1,0 +1,81 @@
+@import "../../common/StyleVariables.scss";
+
+.author {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #59c1f9;
+
+    .auto-form {
+        position: relative;
+        margin: auto;
+        width: 400px;
+        border: 10px solid #0979b6;
+        border-radius: 20px;
+        background-color: $modal-color;
+        padding: 20px;
+
+        .header {
+            margin-bottom: 18px;
+            text-align: center;
+            @include make-bold-font(40px, $label-font-color);
+        }
+
+        .input-and-label {
+            margin-bottom: 18px;
+
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                @include make-bold-font(20px, $label-font-color);
+            }
+
+            .form-input {
+                display: block;
+                @include input-style(100%);
+                @include make-border-box(10px);
+            }
+        }
+
+        .warning {
+            margin-bottom: 20px;
+            @include make-bold-font(15px, $warning-color);
+        }
+
+        .form-button {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 14px;
+            background-color: $button-color;
+            cursor: pointer;
+            @include make-bold-font(20px, $button-font-color);
+            @include raduis-without-border(10px);
+        }
+
+        .form-bottom {
+            text-align: center;
+            @include make-bold-font(16px, #565656);
+        }
+
+        .pass-check {
+
+            .pass-levels {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+
+                .pass-level {
+                    height: 5px;
+                    width: 20%;
+                }
+            }
+
+            .pass-warning {
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 15px;
+                font-weight: bold;
+            }
+        }
+    }
+}
