@@ -23,8 +23,8 @@ export const PasswordCheck: React.FC<PasswordCheckProps> = ({ passwordToCheck })
     const warningColors: string[] = ['#ff0303ff', '#ffaa00ff', '#22ff00ff', '#00e1ffff'];
 
     const checkStrengthLevel = (passLength: number, numbers: boolean, specialSymbols: boolean) => {
-        let level = 1;
-        let levelUp = [passLength > 10, numbers, specialSymbols].filter((value) => value === true).length;
+        const level = 1;
+        const levelUp = [passLength > 10, numbers, specialSymbols].filter((value) => value === true).length;
         return level + levelUp;
     }
 
@@ -70,10 +70,9 @@ export const PasswordCheck: React.FC<PasswordCheckProps> = ({ passwordToCheck })
 
     return <div className="pass-check">
         <div className="pass-levels">
-            <div className="pass-level" style={{ backgroundColor: (passwordLevel > 0) ? warningColors[0] : '#ffffff' }}></div>
-            <div className="pass-level" style={{ backgroundColor: (passwordLevel > 1) ? warningColors[1] : '#ffffff' }}></div>
-            <div className="pass-level" style={{ backgroundColor: (passwordLevel > 2) ? warningColors[2] : '#ffffff' }}></div>
-            <div className="pass-level" style={{ backgroundColor: (passwordLevel > 3) ? warningColors[3] : '#ffffff' }}></div>
+            {warningColors.map((item, index) =>
+                <div className="pass-level" key={index} style={{ backgroundColor: (passwordLevel > index) ? warningColors[index] : '#ffffff' }}></div>
+            )}
         </div>
         <div className="pass-warning" style={{ color: warningColor }}>{warning}</div>
     </div>

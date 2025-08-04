@@ -29,13 +29,11 @@ export const Login = () => {
             setNoUserPassword(false);
         }
 
-        const loginProcess = await dispatch<any>(loginUser({ email: userEmail, password: userPassword }));
-
-        if (loginProcess.meta.requestStatus === 'fulfilled') {
+        await dispatch<any>(loginUser({ email: userEmail, password: userPassword })).then(() => {
             navigate('/');
-        } else {
+        }).catch(() => {
             setLoginError(true);
-        }
+        });
     }
 
     return <div className="auto-form">
